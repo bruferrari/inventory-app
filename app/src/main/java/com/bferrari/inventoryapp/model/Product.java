@@ -11,7 +11,7 @@ public class Product implements Serializable {
     private Long id;
     private String name;
     private float price;
-    private int qty;
+    private int qty = 1;
     private String supplierEmail;
     private String imagePath;
 

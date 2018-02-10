@@ -8,12 +8,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.bferrari.inventoryapp.R;
-import com.bferrari.inventoryapp.db.InventoryContract;
-import com.bferrari.inventoryapp.db.InventoryDBHelper;
-import com.bferrari.inventoryapp.db.InventoryDbUtils;
+import com.bferrari.inventoryapp.data.InventoryContract;
+import com.bferrari.inventoryapp.data.InventoryDBHelper;
+import com.bferrari.inventoryapp.data.InventoryDbUtils;
 import com.bferrari.inventoryapp.model.Product;
 import com.bferrari.inventoryapp.ui.list.adapter.ProductsAvailableAdapter;
 import com.bferrari.inventoryapp.ui.productform.FormActivity;
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
+    private TextView mEmptyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +52,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
+        mProducts.clear();
         getProducts();
+        if (mProducts.isEmpty())
+            displayEmptyMessage();
+        else
+            hideEmptyMessage();
+
+
         mAdapter.notifyDataSetChanged();
     }
 
     private void bindUi() {
         mFab = findViewById(R.id.fab);
+        mEmptyView = findViewById(R.id.empty_text);
     }
 
     private void setupUi() {
@@ -69,6 +82,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mAdapter = new ProductsAvailableAdapter(this, mProducts);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public void displayEmptyMessage() {
+        mEmptyView.setVisibility(View.VISIBLE);
+    }
+
+    public void hideEmptyMessage() {
+        mEmptyView.setVisibility(View.GONE);
     }
 
     private void getProducts() {
@@ -111,5 +132,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         startActivity(new Intent(this, FormActivity.class));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.erase:
+                InventoryDbUtils.eraseTable(mDbHelper);
+                mAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

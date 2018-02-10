@@ -11,9 +11,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bferrari.inventoryapp.R;
-import com.bferrari.inventoryapp.db.InventoryDBHelper;
-import com.bferrari.inventoryapp.db.InventoryDbUtils;
+import com.bferrari.inventoryapp.data.InventoryDBHelper;
+import com.bferrari.inventoryapp.data.InventoryDbUtils;
 import com.bferrari.inventoryapp.model.Product;
+import com.bferrari.inventoryapp.ui.list.MainActivity;
 import com.bferrari.inventoryapp.ui.productform.FormActivity;
 
 import java.util.ArrayList;
@@ -90,6 +91,9 @@ public class ProductsAvailableAdapter
                 if (status) {
                     mProducts.remove(holder.getPosition());
                     notifyDataSetChanged();
+                    if (mProducts.isEmpty()) {
+                        ((MainActivity) mContext).displayEmptyMessage();
+                    }
                 }
             }
         });

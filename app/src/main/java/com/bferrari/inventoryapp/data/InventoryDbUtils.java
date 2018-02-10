@@ -1,0 +1,74 @@
+package com.bferrari.inventoryapp.data;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+
+import com.bferrari.inventoryapp.model.Product;
+
+/**
+ * Created by bferrari on 10/02/18.
+ */
+
+public class InventoryDbUtils {
+
+    private static final String LOG_TAG = InventoryDbUtils.class.getSimpleName();
+
+    private InventoryDbUtils() { }
+
+    public static boolean deleteProduct(InventoryDBHelper dbHelper, Long productId) {
+        return dbHelper.getReadableDatabase()
+                .delete(InventoryContract.InventoryEntry.TABLE_NAME,
+                        InventoryContract.InventoryEntry._ID + "=" + productId,
+                        null) > 0;
+    }
+
+    public static Cursor readProducts(InventoryDBHelper dbHelper) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String[] projection = {
+                InventoryContract.InventoryEntry._ID,
+                InventoryContract.InventoryEntry.PRODUCT_NAME,
+                InventoryContract.InventoryEntry.PRODUCT_PRICE,
+                InventoryContract.InventoryEntry.PRODUCT_QUANTITY,
+                InventoryContract.InventoryEntry.PRODUCT_IMAGE,
+                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE,
+                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL,
+        };
+
+        return db.query(InventoryContract.InventoryEntry.TABLE_NAME,
+                projection,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    public static void insertOrUpdateProduct(InventoryDBHelper dbHelper, Product product) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(InventoryContract.InventoryEntry.PRODUCT_NAME, product.getName());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_PRICE, product.getPrice());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, product.getQty());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, product.getSupplierEmail());
+
+        if (product != null) {
+            db.update(
+                    InventoryContract.InventoryEntry.TABLE_NAME,
+                    values,
+                    InventoryContract.InventoryEntry._ID + "=" + product.getId(),
+                    null);
+            Log.d(LOG_TAG, "Product updated!");
+        } else {
+            db.insert(InventoryContract.InventoryEntry.TABLE_NAME, null, values);
+            Log.d(LOG_TAG, "Product inserted!");
+        }
+    }
+
+    public static void eraseTable(InventoryDBHelper dbHelper) {
+        dbHelper.getReadableDatabase().execSQL("delete from " + InventoryContract.InventoryEntry.TABLE_NAME);
+    }
+}
