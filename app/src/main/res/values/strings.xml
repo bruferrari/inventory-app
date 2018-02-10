@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">InventoryApp</string>
+    <string name="title_activity_form">FormActivity</string>
 </resources>

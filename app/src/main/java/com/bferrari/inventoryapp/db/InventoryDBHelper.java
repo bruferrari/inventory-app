@@ -1,4 +1,4 @@
-package com.bferrari.inventoryapp;
+package com.bferrari.inventoryapp.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
