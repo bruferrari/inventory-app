@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int nameColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_PRICE);
             int qtyColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_QUANTITY);
+            int supplierEmailIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL);
+            int imageColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_IMAGE);
 
             // Iterate through all the returned rows in the cursor
             while (cursor.moveToNext()) {
@@ -110,17 +112,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String currentName = cursor.getString(nameColumnIndex);
                 float currentPrice = cursor.getFloat(priceColumnIndex);
                 int currentQty = cursor.getInt(qtyColumnIndex);
+                String currentImgUri = cursor.getString(imageColumnIndex);
+                String currentSupplier = cursor.getString(supplierEmailIndex);
 
                 Product product = new Product();
                 product.setId(currentID);
                 product.setName(currentName);
                 product.setPrice(currentPrice);
                 product.setQty(currentQty);
+                product.setSupplierEmail(currentSupplier);
+                product.setImagePath(currentImgUri);
 
                 mProducts.add(product);
 
                 Log.i(LOG_TAG, "ID: " + String.valueOf(currentID) +
-                        " - Name: " + currentName + " - Price: " + currentPrice + " - Quantity:" + currentQty);
+                        " - Name: " + currentName + " - Price: " + currentPrice
+                        + " - Quantity:" + currentQty + " - ImageURI:" + currentImgUri);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());
@@ -147,6 +154,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (item.getItemId()) {
             case R.id.erase:
                 InventoryDbUtils.eraseTable(mDbHelper);
+                mProducts.clear();
+                mEmptyView.setVisibility(View.VISIBLE);
                 mAdapter.notifyDataSetChanged();
                 return true;
             default:

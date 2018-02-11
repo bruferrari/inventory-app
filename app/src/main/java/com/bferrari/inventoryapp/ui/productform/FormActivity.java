@@ -2,11 +2,13 @@ package com.bferrari.inventoryapp.ui.productform;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,6 +29,11 @@ import com.bferrari.inventoryapp.model.Product;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import static android.content.Intent.ACTION_OPEN_DOCUMENT;
+import static android.content.Intent.ACTION_PICK;
+import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
+
 public class FormActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String PRODUCT = "PRODUCT";
@@ -35,6 +42,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
 
     private InventoryDBHelper mDbHelper;
     private Product mProduct;
+    private Uri mImageUri;
 
     private Toolbar mToolbar;
     private EditText mProductName;
@@ -61,10 +69,21 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(mToolbar);
 
         if (isEditMode()) {
+            mImageUri = Uri.parse(mProduct.getImagePath());
+
             mProductName.setText(mProduct.getName());
             mProductPrice.setText(String.valueOf(mProduct.getPrice()));
             mProductQty.setText(String.valueOf(mProduct.getQty()));
             mSupplierEmail.setText(mProduct.getSupplierEmail());
+
+            InputStream imageStream = null;
+            try {
+                imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
+            } catch (FileNotFoundException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+            final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
+            mProductImage.setImageBitmap(imageBitmap);
             mAddButton.setText("Edit");
         }
 
@@ -73,8 +92,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         mProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+                Intent galleryIntent = new Intent(ACTION_OPEN_DOCUMENT,
+                                MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 galleryIntent.setType("image/*");
+                galleryIntent.addFlags(FLAG_GRANT_READ_URI_PERMISSION);
+                galleryIntent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                 startActivityForResult(galleryIntent, GALLERY_PICK_RESULT);
             }
         });
@@ -84,12 +106,14 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == GALLERY_PICK_RESULT) {
+        if (requestCode == GALLERY_PICK_RESULT && resultCode == RESULT_OK) {
             try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                mProductImage.setImageBitmap(selectedImage);
+                mImageUri = data.getData();
+                if (mImageUri != null) {
+                    final InputStream imageStream = getContentResolver().openInputStream(mImageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    mProductImage.setImageBitmap(selectedImage);
+                }
             } catch (FileNotFoundException e) {
                 Log.e(LOG_TAG, e.getMessage());
 
@@ -115,6 +139,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         values.put(InventoryContract.InventoryEntry.PRODUCT_PRICE, mProductPrice.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, mProductQty.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, mSupplierEmail.getText().toString());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
+
+        if (mImageUri != null) {
+            values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
+        }
 
         if (isEditMode()) {
             db.update(

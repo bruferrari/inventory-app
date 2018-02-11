@@ -33,7 +33,6 @@ public class InventoryDbUtils {
                 InventoryContract.InventoryEntry.PRODUCT_PRICE,
                 InventoryContract.InventoryEntry.PRODUCT_QUANTITY,
                 InventoryContract.InventoryEntry.PRODUCT_IMAGE,
-                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE,
                 InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL,
         };
 
