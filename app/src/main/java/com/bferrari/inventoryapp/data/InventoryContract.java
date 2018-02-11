@@ -1,4 +1,4 @@
-package com.bferrari.inventoryapp;
+package com.bferrari.inventoryapp.data;
 
 import android.provider.BaseColumns;
 
@@ -44,6 +44,5 @@ public class InventoryContract {
 
         public final static String PRODUCT_SUPPLIER_EMAIL = "suplier_email";
 
-        public final static String PRODUCT_SUPPLIER_PHONE = "supplier_phone";
     }
 }

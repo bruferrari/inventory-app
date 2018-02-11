@@ -1,4 +1,4 @@
-package com.bferrari.inventoryapp;
+package com.bferrari.inventoryapp.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -29,7 +29,6 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
                 + InventoryContract.InventoryEntry.PRODUCT_PRICE + " TEXT NOT NULL, "
                 + InventoryContract.InventoryEntry.PRODUCT_QUANTITY + " TEXT NOT NULL, "
                 + InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL + " TEXT NOT NULL, "
-                + InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE + " TEXT, "
                 + InventoryContract.InventoryEntry.PRODUCT_IMAGE + " TEXT);";
 
         // Execute the SQL statement
