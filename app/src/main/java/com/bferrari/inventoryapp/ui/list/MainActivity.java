@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         " - Name: " + currentName + " - Price: " + currentPrice
                         + " - Quantity:" + currentQty + " - ImageURI:" + currentImgUri
                         + " - Supplier:" + currentSupplier + " " + currentSupplierPhone);
+                        + " - Quantity:" + currentQty + " - ImageURI:" + currentImgUri);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());

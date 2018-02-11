@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
+import static android.content.Intent.ACTION_PICK;
 import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
@@ -84,6 +86,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                 final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
                 mProductImage.setImageBitmap(imageBitmap);
             }
+            mImageUri = Uri.parse(mProduct.getImagePath());
 
             mProductName.setText(mProduct.getName());
             mProductPrice.setText(String.valueOf(mProduct.getPrice()));
@@ -92,6 +95,16 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
             mSupplierPhone.setText(mProduct.getSupplierPhone());
 
             mAddButton.setText("UPDATE");
+
+            InputStream imageStream = null;
+            try {
+                imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
+            } catch (FileNotFoundException e) {
+                Log.e(LOG_TAG, e.getMessage());
+            }
+            final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
+            mProductImage.setImageBitmap(imageBitmap);
+            mAddButton.setText("Edit");
         }
 
         mAddButton.setOnClickListener(this);
@@ -173,6 +186,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, mProductQty.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, mSupplierEmail.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE, mSupplierPhone.getText().toString());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
 
         if (mImageUri != null) {
             values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
