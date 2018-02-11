@@ -33,8 +33,8 @@ public class InventoryDbUtils {
                 InventoryContract.InventoryEntry.PRODUCT_PRICE,
                 InventoryContract.InventoryEntry.PRODUCT_QUANTITY,
                 InventoryContract.InventoryEntry.PRODUCT_IMAGE,
-                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE,
                 InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL,
+                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE
         };
 
         return db.query(InventoryContract.InventoryEntry.TABLE_NAME,
@@ -46,7 +46,7 @@ public class InventoryDbUtils {
                 null);
     }
 
-    public static void insertOrUpdateProduct(InventoryDBHelper dbHelper, Product product) {
+    public static void updateSaleOnProduct(InventoryDBHelper dbHelper, Product product) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -54,6 +54,11 @@ public class InventoryDbUtils {
         values.put(InventoryContract.InventoryEntry.PRODUCT_PRICE, product.getPrice());
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, product.getQty());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, product.getSupplierEmail());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE, product.getSupplierPhone());
+
+        if (product.getImagePath() != null) {
+            values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, product.getImagePath());
+        }
 
         if (product != null) {
             db.update(
@@ -61,10 +66,7 @@ public class InventoryDbUtils {
                     values,
                     InventoryContract.InventoryEntry._ID + "=" + product.getId(),
                     null);
-            Log.d(LOG_TAG, "Product updated!");
-        } else {
-            db.insert(InventoryContract.InventoryEntry.TABLE_NAME, null, values);
-            Log.d(LOG_TAG, "Product inserted!");
+            Log.d(LOG_TAG, "Product updated!" + product.toString());
         }
     }
 

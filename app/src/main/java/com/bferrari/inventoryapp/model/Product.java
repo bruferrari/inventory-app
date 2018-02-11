@@ -13,6 +13,7 @@ public class Product implements Serializable {
     private float price;
     private int qty = 1;
     private String supplierEmail;
+    private String supplierPhone;
     private String imagePath;
 
     public Long getId() {
@@ -55,6 +56,14 @@ public class Product implements Serializable {
         this.supplierEmail = supplierEmail;
     }
 
+    public String getSupplierPhone() {
+        return supplierPhone;
+    }
+
+    public void setSupplierPhone(String supplierPhone) {
+        this.supplierPhone = supplierPhone;
+    }
+
     public String getImagePath() {
         return imagePath;
     }
@@ -71,6 +80,7 @@ public class Product implements Serializable {
                 ", price=" + price +
                 ", qty=" + qty +
                 ", supplierEmail='" + supplierEmail + '\'' +
+                ", supplierPhone='" + supplierPhone + '\'' +
                 ", imagePath='" + imagePath + '\'' +
                 '}';
     }

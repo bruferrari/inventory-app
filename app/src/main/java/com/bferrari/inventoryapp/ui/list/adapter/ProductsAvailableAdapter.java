@@ -7,14 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bferrari.inventoryapp.R;
 import com.bferrari.inventoryapp.data.InventoryDBHelper;
 import com.bferrari.inventoryapp.data.InventoryDbUtils;
 import com.bferrari.inventoryapp.model.Product;
-import com.bferrari.inventoryapp.ui.list.MainActivity;
 import com.bferrari.inventoryapp.ui.productform.FormActivity;
 
 import java.util.ArrayList;
@@ -43,14 +43,14 @@ public class ProductsAvailableAdapter
         TextView name;
         TextView price;
         TextView qty;
-        ImageView trashBtn;
+        Button sellBtn;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.product_name);
             price = itemView.findViewById(R.id.product_price);
             qty = itemView.findViewById(R.id.product_qty);
-            trashBtn = itemView.findViewById(R.id.trash_btn);
+            sellBtn = itemView.findViewById(R.id.sell_btn);
         }
     }
 
@@ -84,19 +84,22 @@ public class ProductsAvailableAdapter
             }
         });
 
-        holder.trashBtn.setOnClickListener(new View.OnClickListener() {
+        holder.sellBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean status = InventoryDbUtils.deleteProduct(mDbHelper, product.getId());
-                if (status) {
-                    mProducts.remove(holder.getPosition());
-                    notifyDataSetChanged();
-                    if (mProducts.isEmpty()) {
-                        ((MainActivity) mContext).displayEmptyMessage();
-                    }
+                Product product = mProducts.get(position);
+
+                if (product.getQty() > 0) {
+                    int updatedQty = product.getQty() - 1;
+                    product.setQty(updatedQty);
+                    InventoryDbUtils.updateSaleOnProduct(mDbHelper, product);
+                    holder.qty.setText(String.valueOf(updatedQty));
+                } else {
+                    Toast.makeText(mContext, "There's no more product available", Toast.LENGTH_LONG).show();
                 }
             }
         });
+
     }
 
     @Override

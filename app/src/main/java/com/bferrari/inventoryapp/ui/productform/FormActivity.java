@@ -1,12 +1,16 @@
 package com.bferrari.inventoryapp.ui.productform;
 
+import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -22,10 +26,15 @@ import android.widget.Toast;
 import com.bferrari.inventoryapp.R;
 import com.bferrari.inventoryapp.data.InventoryContract;
 import com.bferrari.inventoryapp.data.InventoryDBHelper;
+import com.bferrari.inventoryapp.data.InventoryDbUtils;
 import com.bferrari.inventoryapp.model.Product;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+
+import static android.content.Intent.ACTION_OPEN_DOCUMENT;
+import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
+import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
 public class FormActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,6 +44,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
 
     private InventoryDBHelper mDbHelper;
     private Product mProduct;
+    private Uri mImageUri;
 
     private Toolbar mToolbar;
     private EditText mProductName;
@@ -43,6 +53,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mSupplierEmail;
     private ImageView mProductImage;
     private Button mAddButton;
+    private EditText mSupplierPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +72,26 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(mToolbar);
 
         if (isEditMode()) {
+            if (mProduct.getImagePath() != null) {
+                mImageUri = Uri.parse(mProduct.getImagePath());
+
+                InputStream imageStream = null;
+                try {
+                    imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
+                } catch (FileNotFoundException e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+                final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
+                mProductImage.setImageBitmap(imageBitmap);
+            }
+
             mProductName.setText(mProduct.getName());
             mProductPrice.setText(String.valueOf(mProduct.getPrice()));
             mProductQty.setText(String.valueOf(mProduct.getQty()));
             mSupplierEmail.setText(mProduct.getSupplierEmail());
-            mAddButton.setText("Edit");
+            mSupplierPhone.setText(mProduct.getSupplierPhone());
+
+            mAddButton.setText("UPDATE");
         }
 
         mAddButton.setOnClickListener(this);
@@ -73,8 +99,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         mProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+                Intent galleryIntent = new Intent(ACTION_OPEN_DOCUMENT,
+                                MediaStore.Images.Media.INTERNAL_CONTENT_URI);
                 galleryIntent.setType("image/*");
+                galleryIntent.addFlags(FLAG_GRANT_READ_URI_PERMISSION);
+                galleryIntent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                 startActivityForResult(galleryIntent, GALLERY_PICK_RESULT);
             }
         });
@@ -84,12 +113,14 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == GALLERY_PICK_RESULT) {
+        if (requestCode == GALLERY_PICK_RESULT && resultCode == RESULT_OK) {
             try {
-                final Uri imageUri = data.getData();
-                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
-                mProductImage.setImageBitmap(selectedImage);
+                mImageUri = data.getData();
+                if (mImageUri != null) {
+                    final InputStream imageStream = getContentResolver().openInputStream(mImageUri);
+                    final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+                    mProductImage.setImageBitmap(selectedImage);
+                }
             } catch (FileNotFoundException e) {
                 Log.e(LOG_TAG, e.getMessage());
 
@@ -105,6 +136,32 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         mSupplierEmail = findViewById(R.id.form_product_supplier_email);
         mAddButton = findViewById(R.id.form_add_button);
         mProductImage = findViewById(R.id.form_product_image);
+        mSupplierPhone = findViewById(R.id.form_product_supplier_phone);
+    }
+
+    public void removeProduct(View view) {
+        final AlertDialog alertDialog = new AlertDialog.Builder(FormActivity.this).create();
+        alertDialog.setTitle("DELETE");
+        alertDialog.setMessage(getString(R.string.delete_question));
+
+        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                boolean status = InventoryDbUtils.deleteProduct(mDbHelper, mProduct.getId());
+                if (status) {
+                    finish();
+                }
+            }
+        });
+
+        alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.show();
     }
 
     private void insertOrUpdateProduct() {
@@ -115,6 +172,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         values.put(InventoryContract.InventoryEntry.PRODUCT_PRICE, mProductPrice.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, mProductQty.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, mSupplierEmail.getText().toString());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE, mSupplierPhone.getText().toString());
+
+        if (mImageUri != null) {
+            values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
+        }
 
         if (isEditMode()) {
             db.update(
@@ -134,11 +196,14 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     public void increaseQty(View view) {
         int newQty = Integer.parseInt(mProductQty.getText().toString()) + 1;
         mProductQty.setText(String.valueOf(newQty));
+
     }
 
     public void decreaseQty(View view) {
-        int newQty = Integer.parseInt(mProductQty.getText().toString()) - 1;
-        mProductQty.setText(String.valueOf(newQty));
+        if (Integer.parseInt(mProductQty.getText().toString()) > 0) {
+            int newQty = Integer.parseInt(mProductQty.getText().toString()) - 1;
+            mProductQty.setText(String.valueOf(newQty));
+        }
     }
 
     private boolean isEditMode() {
