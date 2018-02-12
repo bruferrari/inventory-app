@@ -27,3 +27,8 @@ W
 'app/src/main/res/layout/product_row.xml,9/d/9da1c9e2e9c3973431f996e6e3dbcf8189c815a0
 S
 #app/src/main/res/values/strings.xml,d/2/d2281fbb3027de2722081a53408dd77628bf080e
+<
+build.gradle,f/0/f07866736216be0ee2aba49e392191aeae700a35
+:
+
+.gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
