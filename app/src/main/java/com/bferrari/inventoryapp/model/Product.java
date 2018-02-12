@@ -12,7 +12,7 @@ public class Product implements Serializable {
     private String name;
     private float price;
     private int qty = 1;
-    private String supplierEmail;
+    private String supplierName;
     private String supplierPhone;
     private String imagePath;
 
@@ -48,12 +48,12 @@ public class Product implements Serializable {
         this.qty = qty;
     }
 
-    public String getSupplierEmail() {
-        return supplierEmail;
+    public String getSupplierName() {
+        return supplierName;
     }
 
-    public void setSupplierEmail(String supplierEmail) {
-        this.supplierEmail = supplierEmail;
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
     }
 
     public String getSupplierPhone() {
@@ -79,7 +79,7 @@ public class Product implements Serializable {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", qty=" + qty +
-                ", supplierEmail='" + supplierEmail + '\'' +
+                ", supplierName='" + supplierName + '\'' +
                 ", supplierPhone='" + supplierPhone + '\'' +
                 ", imagePath='" + imagePath + '\'' +
                 '}';

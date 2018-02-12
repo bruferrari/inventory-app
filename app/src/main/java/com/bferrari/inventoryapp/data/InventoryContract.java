@@ -42,7 +42,7 @@ public class InventoryContract {
 
         public final static String PRODUCT_IMAGE = "image";
 
-        public final static String PRODUCT_SUPPLIER_EMAIL = "suplier_email";
+        public final static String PRODUCT_SUPPLIER_NAME = "supplier_name";
 
         public final static String PRODUCT_SUPPLIER_PHONE = "supplier_phone";
     }

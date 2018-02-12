@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,7 +33,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 import static android.content.Intent.ACTION_OPEN_DOCUMENT;
-import static android.content.Intent.ACTION_PICK;
 import static android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION;
 import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
 
@@ -52,10 +50,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     private EditText mProductName;
     private EditText mProductPrice;
     private EditText mProductQty;
-    private EditText mSupplierEmail;
+    private EditText mSupplierName;
     private ImageView mProductImage;
     private Button mAddButton;
     private EditText mSupplierPhone;
+    private Button mDeleteButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +73,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         setSupportActionBar(mToolbar);
 
         if (isEditMode()) {
+            mDeleteButton.setVisibility(View.VISIBLE);
             if (mProduct.getImagePath() != null) {
                 mImageUri = Uri.parse(mProduct.getImagePath());
 
@@ -86,25 +86,27 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
                 final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
                 mProductImage.setImageBitmap(imageBitmap);
             }
-            mImageUri = Uri.parse(mProduct.getImagePath());
+
+            if (mProduct.getImagePath() != null) {
+                mImageUri = Uri.parse(mProduct.getImagePath());
+
+                InputStream imageStream = null;
+                try {
+                    imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
+                } catch (FileNotFoundException e) {
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+                final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
+                mProductImage.setImageBitmap(imageBitmap);
+            }
 
             mProductName.setText(mProduct.getName());
             mProductPrice.setText(String.valueOf(mProduct.getPrice()));
             mProductQty.setText(String.valueOf(mProduct.getQty()));
-            mSupplierEmail.setText(mProduct.getSupplierEmail());
+            mSupplierName.setText(mProduct.getSupplierName());
             mSupplierPhone.setText(mProduct.getSupplierPhone());
 
             mAddButton.setText("UPDATE");
-
-            InputStream imageStream = null;
-            try {
-                imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
-            } catch (FileNotFoundException e) {
-                Log.e(LOG_TAG, e.getMessage());
-            }
-            final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
-            mProductImage.setImageBitmap(imageBitmap);
-            mAddButton.setText("Edit");
         }
 
         mAddButton.setOnClickListener(this);
@@ -146,10 +148,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         mProductName = findViewById(R.id.form_product_name);
         mProductPrice = findViewById(R.id.form_product_price);
         mProductQty = findViewById(R.id.form_product_quantity);
-        mSupplierEmail = findViewById(R.id.form_product_supplier_email);
+        mSupplierName = findViewById(R.id.form_product_supplier_email);
         mAddButton = findViewById(R.id.form_add_button);
         mProductImage = findViewById(R.id.form_product_image);
         mSupplierPhone = findViewById(R.id.form_product_supplier_phone);
+        mDeleteButton = findViewById(R.id.form_remove_button);
     }
 
     public void removeProduct(View view) {
@@ -184,9 +187,8 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         values.put(InventoryContract.InventoryEntry.PRODUCT_NAME, mProductName.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_PRICE, mProductPrice.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, mProductQty.getText().toString());
-        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, mSupplierEmail.getText().toString());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME, mSupplierName.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE, mSupplierPhone.getText().toString());
-        values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
 
         if (mImageUri != null) {
             values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
@@ -238,8 +240,9 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.order_more:
-                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + mProduct.getSupplierEmail()));
-                startActivity(Intent.createChooser(intent, "e-mail"));
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + mProduct.getSupplierPhone()));
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -249,7 +252,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         if (!isEmptyField(mProductName) && !isEmptyField(mProductPrice)
-                && !isEmptyField(mProductQty) && !isEmptyField(mSupplierEmail)
+                && !isEmptyField(mProductQty) && !isEmptyField(mSupplierName)
                 && !isEmptyField(mSupplierPhone)) {
             insertOrUpdateProduct();
             finish();

@@ -23,3 +23,7 @@ N
 app/src/main/res/menu/menu.xml,4/5/453a7c90e2bbd5580c6bce7f2f1d9a85b2c089db
 X
 (app/src/main/res/layout/content_form.xml,c/e/cea257997f6a942e3b962f393e2cc3b48ab463cb
+W
+'app/src/main/res/layout/product_row.xml,9/d/9da1c9e2e9c3973431f996e6e3dbcf8189c815a0
+S
+#app/src/main/res/values/strings.xml,d/2/d2281fbb3027de2722081a53408dd77628bf080e

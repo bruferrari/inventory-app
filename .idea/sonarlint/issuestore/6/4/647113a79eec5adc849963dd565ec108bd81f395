@@ -1,5 +1,5 @@
 
+Rsquid:S1153"1Directly append the argument of String.valueOf().(Ÿ”á°ÿÿÿÿÿ8”êß¹˜,
+jsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ÄÇ‚·8•©¹·˜,
 }squid:S1450"\Remove the "mRecyclerView" field and declare it as a local variable in the relevant methods.(Òéýÿÿÿÿ8…ƒô‰˜,
-lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(øå´¡ÿÿÿÿÿ8ÁôäŽ˜,
-csquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ÄÇ‚·
-Ksquid:S1153"1Directly append the argument of String.valueOf().(Ÿ”á°ÿÿÿÿÿ
+lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(øå´¡ÿÿÿÿÿ8”êß¹˜,
