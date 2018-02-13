@@ -15,6 +15,7 @@ import com.bferrari.inventoryapp.R;
 import com.bferrari.inventoryapp.data.InventoryDBHelper;
 import com.bferrari.inventoryapp.data.InventoryDbUtils;
 import com.bferrari.inventoryapp.model.Product;
+import com.bferrari.inventoryapp.ui.details.DetailsActivity;
 import com.bferrari.inventoryapp.ui.productform.FormActivity;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class ProductsAvailableAdapter
                 Product product = mProducts.get(position);
                 Log.d(LOG_TAG, "" + product.toString());
 
-                Intent intent = new Intent(mContext, FormActivity.class);
+                Intent intent = new Intent(mContext, DetailsActivity.class);
                 intent.putExtra("PRODUCT", product);
 
                 mContext.startActivity(intent);

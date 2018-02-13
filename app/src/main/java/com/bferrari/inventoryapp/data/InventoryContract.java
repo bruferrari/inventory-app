@@ -45,5 +45,7 @@ public class InventoryContract {
         public final static String PRODUCT_SUPPLIER_NAME = "supplier_name";
 
         public final static String PRODUCT_SUPPLIER_PHONE = "supplier_phone";
+
+        public final static String PRODUCT_SUPPLIER_EMAIL = "supplier_email";
     }
 }

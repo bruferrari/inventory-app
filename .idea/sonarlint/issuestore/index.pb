@@ -32,3 +32,15 @@ S
 :
 
 .gitignore,a/5/a5cc2925ca8258af241be7e5b0381edf30266302
+\
+,app/src/main/res/layout/activity_details.xml,6/3/63b00321bda4c3b85c699ca951df638afadffafc
+U
+%app/src/main/res/menu/detail_menu.xml,e/b/ebd875231fcfca3e74384549b92019a465267f64
+X
+(app/src/main/res/layout/content_edit.xml,5/3/5312431f0bb0f41061df2d3010feba35730a2186
+Y
+)app/src/main/res/layout/activity_edit.xml,5/1/5161447d40e15d480263e8b52e1b2e3fbb136508
+u
+Eapp/src/main/java/com/bferrari/inventoryapp/ui/edit/EditActivity.java,6/e/6e7d43dc837d0295b0578ce574e92c2b70cae6a0
+{
+Kapp/src/main/java/com/bferrari/inventoryapp/ui/details/DetailsActivity.java,6/8/68dd1eb1679007fda62b87e3d4a0e1c5209d0ba0

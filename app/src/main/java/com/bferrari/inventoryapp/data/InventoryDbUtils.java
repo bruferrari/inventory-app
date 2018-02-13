@@ -34,7 +34,8 @@ public class InventoryDbUtils {
                 InventoryContract.InventoryEntry.PRODUCT_QUANTITY,
                 InventoryContract.InventoryEntry.PRODUCT_IMAGE,
                 InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME,
-                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE
+                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE,
+                InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL
         };
 
         return db.query(InventoryContract.InventoryEntry.TABLE_NAME,
@@ -55,6 +56,7 @@ public class InventoryDbUtils {
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, product.getQty());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME, product.getSupplierName());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE, product.getSupplierPhone());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, product.getSupplierEmail());
 
         if (product.getImagePath() != null) {
             values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, product.getImagePath());

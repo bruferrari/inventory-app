@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.bferrari.inventoryapp">
 
-    <uses-permission android:name="au.com.example.READ_CONTENT" />
-    <uses-permission android:name="au.com.example.WRITE_CONTENT" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission android:name="com.google.android.apps.photos.permission.GOOGLE_PHOTOS"/>
 
@@ -25,6 +23,10 @@
             android:name=".ui.productform.FormActivity"
             android:label="@string/title_activity_form"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".ui.details.DetailsActivity"
+            android:label="Product Details"/>
+        <activity android:name=".ui.edit.EditActivity"
+            android:label="Edit Product"/>
     </application>
 
 </manifest>

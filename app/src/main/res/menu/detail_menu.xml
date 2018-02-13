@@ -3,6 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/order_more"
-        app:showAsAction="ifRoom"
+        app:showAsAction="collapseActionView"
         android:title="Order More" />
+
+    <item android:id="@+id/edit"
+        app:showAsAction="collapseActionView"
+        android:title="Edit Product" />
 </menu>

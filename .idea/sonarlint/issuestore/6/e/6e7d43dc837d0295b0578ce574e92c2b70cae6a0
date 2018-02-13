@@ -1,0 +1,4 @@
+
+Rsquid:S1068"1Remove this unused "mDeleteButton" private field.(¾ÿñåÿÿÿÿÿ8ÊôÆÝ˜,
+}squid:S1450"\Remove the "mDeleteButton" field and declare it as a local variable in the relevant methods.(¾ÿñåÿÿÿÿÿ8†ŠÈÝ˜,
+jsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(”õ °8ÇŸµÝ˜,

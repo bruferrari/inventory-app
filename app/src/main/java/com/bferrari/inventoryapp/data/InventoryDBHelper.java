@@ -30,6 +30,7 @@ public class InventoryDBHelper extends SQLiteOpenHelper {
                 + InventoryContract.InventoryEntry.PRODUCT_QUANTITY + " TEXT NOT NULL, "
                 + InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME + " TEXT NOT NULL, "
                 + InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE + " TEXT NOT NULL, "
+                + InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL + " TEXT NOT NULL, "
                 + InventoryContract.InventoryEntry.PRODUCT_IMAGE + " TEXT);";
 
         // Execute the SQL statement

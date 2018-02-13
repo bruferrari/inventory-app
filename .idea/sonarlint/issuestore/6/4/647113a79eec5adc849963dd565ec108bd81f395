@@ -1,5 +1,5 @@
 
+lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(ψε΄΅ÿÿÿÿÿ8”κίΉ,
 Rsquid:S1153"1Directly append the argument of String.valueOf().(”α°ÿÿÿÿÿ8”κίΉ,
 jsquid:MaximumInheritanceDepth"<This class has 7 parents which is greater than 5 authorized.(ΔΗ‚·8•©Ή·,
 }squid:S1450"\Remove the "mRecyclerView" field and declare it as a local variable in the relevant methods.(Òιύÿÿÿÿ8…ƒτ‰,
-lsquid:S1301"KReplace this "switch" statement by "if" statements to increase readability.(ψε΄΅ÿÿÿÿÿ8”κίΉ,

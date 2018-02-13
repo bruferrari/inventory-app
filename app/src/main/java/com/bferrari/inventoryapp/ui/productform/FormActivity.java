@@ -1,15 +1,20 @@
 package com.bferrari.inventoryapp.ui.productform;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,6 +46,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     public static final String PRODUCT = "PRODUCT";
     private static final String LOG_TAG = FormActivity.class.getSimpleName();
     private static final int GALLERY_PICK_RESULT = 1;
+    private static final int REQUEST_PERMISSIONS = 2;
 
     private InventoryDBHelper mDbHelper;
     private Product mProduct;
@@ -54,7 +60,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mProductImage;
     private Button mAddButton;
     private EditText mSupplierPhone;
-    private Button mDeleteButton;
+    private EditText mSupplierEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,56 +78,41 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         bindUi();
         setSupportActionBar(mToolbar);
 
-        if (isEditMode()) {
-            mDeleteButton.setVisibility(View.VISIBLE);
-            if (mProduct.getImagePath() != null) {
-                mImageUri = Uri.parse(mProduct.getImagePath());
-
-                InputStream imageStream = null;
-                try {
-                    imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
-                } catch (FileNotFoundException e) {
-                    Log.e(LOG_TAG, e.getMessage());
-                }
-                final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
-                mProductImage.setImageBitmap(imageBitmap);
-            }
-
-            if (mProduct.getImagePath() != null) {
-                mImageUri = Uri.parse(mProduct.getImagePath());
-
-                InputStream imageStream = null;
-                try {
-                    imageStream = getContentResolver().openInputStream(Uri.parse(mProduct.getImagePath()));
-                } catch (FileNotFoundException e) {
-                    Log.e(LOG_TAG, e.getMessage());
-                }
-                final Bitmap imageBitmap = BitmapFactory.decodeStream(imageStream);
-                mProductImage.setImageBitmap(imageBitmap);
-            }
-
-            mProductName.setText(mProduct.getName());
-            mProductPrice.setText(String.valueOf(mProduct.getPrice()));
-            mProductQty.setText(String.valueOf(mProduct.getQty()));
-            mSupplierName.setText(mProduct.getSupplierName());
-            mSupplierPhone.setText(mProduct.getSupplierPhone());
-
-            mAddButton.setText("UPDATE");
-        }
-
         mAddButton.setOnClickListener(this);
 
         mProductImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent galleryIntent = new Intent(ACTION_OPEN_DOCUMENT,
-                                MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-                galleryIntent.setType("image/*");
-                galleryIntent.addFlags(FLAG_GRANT_READ_URI_PERMISSION);
-                galleryIntent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
-                startActivityForResult(galleryIntent, GALLERY_PICK_RESULT);
+                if (ContextCompat.checkSelfPermission(FormActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(FormActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_PERMISSIONS);
+                } else {
+                    pickFromGallery();
+                }
             }
         });
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode) {
+            case REQUEST_PERMISSIONS:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    pickFromGallery();
+                }
+                return;
+        }
+    }
+
+    private void pickFromGallery() {
+        Intent galleryIntent = new Intent(ACTION_OPEN_DOCUMENT,
+                MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        galleryIntent.setType("image/*");
+        galleryIntent.addFlags(FLAG_GRANT_READ_URI_PERMISSION);
+        galleryIntent.addFlags(FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        startActivityForResult(galleryIntent, GALLERY_PICK_RESULT);
     }
 
     @Override
@@ -148,11 +139,11 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         mProductName = findViewById(R.id.form_product_name);
         mProductPrice = findViewById(R.id.form_product_price);
         mProductQty = findViewById(R.id.form_product_quantity);
-        mSupplierName = findViewById(R.id.form_product_supplier_email);
+        mSupplierName = findViewById(R.id.form_product_supplier_name);
         mAddButton = findViewById(R.id.form_add_button);
         mProductImage = findViewById(R.id.form_product_image);
         mSupplierPhone = findViewById(R.id.form_product_supplier_phone);
-        mDeleteButton = findViewById(R.id.form_remove_button);
+        mSupplierEmail = findViewById(R.id.form_product_supplier_email);
     }
 
     public void removeProduct(View view) {
@@ -180,7 +171,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
     }
 
-    private void insertOrUpdateProduct() {
+    private void insertProduct() {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -189,6 +180,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         values.put(InventoryContract.InventoryEntry.PRODUCT_QUANTITY, mProductQty.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME, mSupplierName.getText().toString());
         values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE, mSupplierPhone.getText().toString());
+        values.put(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL, mSupplierEmail.getText().toString());
 
         if (mImageUri != null) {
             values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
@@ -230,7 +222,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         if (isEditMode()) {
-            inflater.inflate(R.menu.form_menu, menu);
+            inflater.inflate(R.menu.detail_menu, menu);
         }
 
         return true;
@@ -253,11 +245,12 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if (!isEmptyField(mProductName) && !isEmptyField(mProductPrice)
                 && !isEmptyField(mProductQty) && !isEmptyField(mSupplierName)
-                && !isEmptyField(mSupplierPhone)) {
-            insertOrUpdateProduct();
+                && !isEmptyField(mSupplierPhone) && !isEmptyField(mSupplierEmail)) {
+            insertProduct();
             finish();
         } else {
             Toast.makeText(this, R.string.blank_fields_msg, Toast.LENGTH_LONG).show();
         }
     }
+
 }

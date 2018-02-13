@@ -101,9 +101,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             int nameColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_PRICE);
             int qtyColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_QUANTITY);
-            int supplierEmailIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME);
+            int supplierNameIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_NAME);
             int imageColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_IMAGE);
             int supplierPhoneIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_PHONE);
+            int supplierEmailIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.PRODUCT_SUPPLIER_EMAIL);
 
             // Iterate through all the returned rows in the cursor
             while (cursor.moveToNext()) {
@@ -112,8 +113,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 float currentPrice = cursor.getFloat(priceColumnIndex);
                 int currentQty = cursor.getInt(qtyColumnIndex);
                 String currentImgUri = cursor.getString(imageColumnIndex);
-                String currentSupplierName = cursor.getString(supplierEmailIndex);
+                String currentSupplierName = cursor.getString(supplierNameIndex);
                 String currentSupplierPhone = cursor.getString(supplierPhoneIndex);
+                String currentSupplierEmail = cursor.getString(supplierEmailIndex);
 
                 Product product = new Product();
                 product.setId(currentID);
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 product.setQty(currentQty);
                 product.setSupplierName(currentSupplierName);
                 product.setSupplierPhone(currentSupplierPhone);
+                product.setSupplierEmail(currentSupplierEmail);
                 product.setImagePath(currentImgUri);
 
                 mProducts.add(product);
@@ -129,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.i(LOG_TAG, "ID: " + String.valueOf(currentID) +
                         " - Name: " + currentName + " - Price: " + currentPrice
                         + " - Quantity:" + currentQty + " - ImageURI:" + currentImgUri
-                        + " - Supplier:" + currentSupplierName + " " + currentSupplierPhone);
+                        + " - Supplier:" + currentSupplierName + " " + currentSupplierPhone + " " + currentSupplierEmail);
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, e.getMessage());
