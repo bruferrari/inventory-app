@@ -4,4 +4,5 @@
     <string name="empty_data_text">There\'s no data to display. Please click on + button on the right corner of your screen to add a product and fill the fields.</string>
     <string name="blank_fields_msg">There are blank fields that must be filled</string>
     <string name="delete_question">Do you really want to delete?</string>
+    <string name="order_more">Choose what method do you want to use to order more products</string>
 </resources>

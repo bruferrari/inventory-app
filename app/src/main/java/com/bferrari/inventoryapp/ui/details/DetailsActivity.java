@@ -156,13 +156,39 @@ public class DetailsActivity extends AppCompatActivity {
         return true;
     }
 
+    private void orderMore() {
+        final AlertDialog alertDialog = new AlertDialog.Builder(DetailsActivity.this).create();
+        alertDialog.setTitle("ORDER MORE");
+        alertDialog.setMessage(getString(R.string.order_more));
+
+        alertDialog.setButton(Dialog.BUTTON_POSITIVE, "E-MAIL", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto",mProduct.getSupplierEmail(), null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "Body");
+                startActivity(Intent.createChooser(emailIntent, "Send email"));
+            }
+        });
+
+        alertDialog.setButton(Dialog.BUTTON_NEGATIVE, "PHONE", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + mProduct.getSupplierPhone()));
+                startActivity(intent);
+            }
+        });
+
+        alertDialog.show();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.order_more:
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + mProduct.getSupplierPhone()));
-                startActivity(intent);
+                orderMore();
                 return true;
             case R.id.edit:
                 if (mProduct != null) {

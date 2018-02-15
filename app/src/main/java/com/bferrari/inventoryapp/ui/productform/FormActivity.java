@@ -185,16 +185,7 @@ public class FormActivity extends AppCompatActivity implements View.OnClickListe
         if (mImageUri != null) {
             values.put(InventoryContract.InventoryEntry.PRODUCT_IMAGE, mImageUri.toString());
         }
-
-        if (isEditMode()) {
-            db.update(
-                    InventoryContract.InventoryEntry.TABLE_NAME,
-                    values,
-                    InventoryContract.InventoryEntry._ID + "=" + mProduct.getId(),
-                    null);
-        } else {
             db.insert(InventoryContract.InventoryEntry.TABLE_NAME, null, values);
-        }
     }
 
     private boolean isEmptyField(EditText editText) {
